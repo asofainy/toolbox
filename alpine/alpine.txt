@@ -1,0 +1,154 @@
+setup-alpine
+https://wiki.alpinelinux.org/wiki/Install_to_disk
+
+-----------------
+
+==========
+setup alpine
+===========
+setup-alpine -f file.answer
+
+# Example answer file for setup-alpine script
+# If you don't want to use a certain option, then comment it out
+
+hostname = atlas
+
+# Set keyboard layout
+KEYMAPOPTS=fr-azerty"
+
+# Set hostname to alpine-test
+HOSTNAMEOPTS="-n $hostname"
+
+# Contents of /etc/network/interfaces
+INTERFACESOPTS="auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet dhcp
+    hostname $hostname
+"
+
+# Search domain of example.com, Google public nameserver
+#DNSOPTS="-d example.com 8.8.8.8"
+
+# Set timezone to UTC
+TIMEZONEOPTS="-z UTC"
+
+# set http/ftp proxy
+#PROXYOPTS="http://webproxy:8080"
+
+# Add a random mirror
+APKREPOSOPTS="-r"
+
+# Install Openssh
+SSHDOPTS="-c openssh"
+
+# Use chrony
+NTPOPTS="-c chrony"
+
+# Use /dev/sda as a sys disk
+DISKOPTS="-m sys /dev/sda"
+
+# Setup in /media/sdb1
+LBUOPTS="/media/sdb1"
+APKCACHEOPTS="/media/sdb1/cache"
+
+OR
+
+setup-alpine
+
+Keyboard layout: fr-azerty
+Hostname: atlas
+Network interface: eth0
+IP address: dhcp
+Manual network configuration: no
+Password: r00t
+Again password: r00t
+Time zone: UTC
+HTTP proxy: none
+NTP client: chrony
+Mirror: 1
+SSH server: openssh
+Setup disk: sda
+Use :sda
+Store configs: floppy
+Apk cache directory: /media/floppy/cache
+
+
+#equivalent de cockpit
+#https://wiki.alpinelinux.org/wiki/Alpine_Configuration_Framework_Design
+setup-acf 
+
+======
+Create users
+======
+
+adduser docker
+
+
+==========
+Install packages
+===========
+
+vim /etc/apk/repositories
+(uncomment the .../alpine/xxx/community repo)
+
+apk add --update vim
+apk add open-vm-tools open-vm-tools-guestinfo open-vm-tools-deploypkg
+apk add docker 
+
+============
+Setup pacakges
+==============
+
+echo '%wheel ALL=(ALL) ALL' > /etc/sudoers.d/wheel
+adduser docker wheel
+
+# Setup VMtools
+#https://visualisere.no/alpine-linux-in-vmware-fusion.html
+
+rc-update add open-vm-tools boot
+rc-service open-vm-tools start
+
+# Setup Docker
+
+su - docker -c service docker start
+
+reboot
+
+# not found
+#/usr/bin/vmhgfs-fuse .host:/ /mnt -o subtype=vmhgfs-fuse,allow_other
+
+==============
+setup containers
+===============
+
+docker run \
+--name portainer --hostname portainer.olympus.local \
+--detach \
+-v //var/run/docker.sock:/var/run/docker.sock \
+#s-v-v "D:\Applications\portainer\container\data":/data \
+-p 9000:9000 \
+--memory=128m \
+portainer/portainer-ce:latest
+
+
+==============
+SAMBA
+================
+#https://www.hiroom2.com/2017/08/21/alpinelinux-3-6-cifs-utils-en/
+#Autoriser sur CHAOS depuis le parefeu ESET et créer le partage 
+
+apk add cifs-utils
+
+
+# https://timlehr.com/auto-mount-samba-cifs-shares-via-fstab-on-linux/
+#
+#Dans /etc/fstab ajouter
+# //192.168.26.1/apps  	/apps	cifs 	uid=0,credentials=/root/.smb,iocharset=utf8,vers=3.0,rw,noperm 0 0
+#
+# Creer un ficher /root/.smb avec les identifiants
+#
+# user=ssh_ha
+# password=55H_5@
+# domain=olympus.local
