@@ -11,6 +11,6 @@ mkdir -pv $backup_folder
 
 mysqldump -h $host -u $username --routines --triggers $database | gzip -c > $backup_folder/$file 
 
-echo "Dump file $file created :"
+echo "Dump file $file created in $backup_folder :"
 
 ls -ltrah $backup_folder
