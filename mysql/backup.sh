@@ -4,7 +4,7 @@ MYSQL_PWD=$MYSQL_PWD
 host=$1
 username=$2
 database=$3
-file="dump_$database_`date +'%Y%m%d_%H%M%S'`.sql.gz"
+file="dump_${database}_`date +'%Y%m%d_%H%M%S'`.sql.gz"
 backup_folder="/backup"
 
 mkdir -pv /backup/$app 
