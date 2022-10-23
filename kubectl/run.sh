@@ -9,4 +9,4 @@ pod=$(kubectl get pods -n $namespace -l app=$app --field-selector status.phase=R
 
 echo "Using pod $pod"
 echo "CMD : $cmd"
-kubectl exec $pod -n $namespace -c $container -- /bin/bash -l -c "$cmd"
+kubectl exec $pod -n $namespace -c $container -- /bin/bash -c "$cmd"
